@@ -451,20 +451,6 @@ export default function Home() {
           <div className="space-y-8">
             {[
               {
-                title: "Advisory Board Member",
-                company: "Meta Research",
-                period: "Present",
-                description: "Provide strategic guidance on technology initiatives, program management best practices, and emerging technology trends including AI/LLM integration and blockchain applications.",
-                tags: ["Strategic Advisory", "AI/LLM", "Technology Leadership"]
-              },
-              {
-                title: "Advisory Board Member",
-                company: "Frogice Inc (Kentucky)",
-                period: "Present",
-                description: "Advise on technical strategy, product development, and scaling operations. Leverage extensive experience in technology leadership to guide company growth trajectory.",
-                tags: ["Technical Strategy", "Product Development", "Advisory"]
-              },
-              {
                 title: "Chief Executive Officer",
                 company: "VF Associates, LLC",
                 period: "Present",
@@ -484,6 +470,20 @@ export default function Home() {
                 period: "Present",
                 description: "Architected white paper and SDK for sustainable gaming economy. Launched utility token that became second-best performing on chain for two months. Set up RPC servers and contributed to bridging solutions.",
                 tags: ["Blockchain", "Tokenomics", "Smart Contracts"]
+              },
+              {
+                title: "Advisory Board Member",
+                company: "Meta Research",
+                period: "Present",
+                description: "Provide strategic guidance on technology initiatives, program management best practices, and emerging technology trends including AI/LLM integration and blockchain applications.",
+                tags: ["Strategic Advisory", "AI/LLM", "Technology Leadership"]
+              },
+              {
+                title: "Advisory Board Member",
+                company: "Frogice Inc (Kentucky)",
+                period: "Present",
+                description: "Advise on technical strategy, product development, and scaling operations. Leverage extensive experience in technology leadership to guide company growth trajectory.",
+                tags: ["Technical Strategy", "Product Development", "Advisory"]
               },
               {
                 title: "Principal Program Manager",
