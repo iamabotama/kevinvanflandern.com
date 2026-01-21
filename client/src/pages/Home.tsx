@@ -451,6 +451,20 @@ export default function Home() {
           <div className="space-y-8">
             {[
               {
+                title: "Advisory Board Member",
+                company: "Meta Research",
+                period: "Present",
+                description: "Provide strategic guidance on technology initiatives, program management best practices, and emerging technology trends including AI/LLM integration and blockchain applications.",
+                tags: ["Strategic Advisory", "AI/LLM", "Technology Leadership"]
+              },
+              {
+                title: "Advisory Board Member",
+                company: "Frogice Inc (Kentucky)",
+                period: "Present",
+                description: "Advise on technical strategy, product development, and scaling operations. Leverage extensive experience in technology leadership to guide company growth trajectory.",
+                tags: ["Technical Strategy", "Product Development", "Advisory"]
+              },
+              {
                 title: "Chief Executive Officer",
                 company: "VF Associates, LLC",
                 period: "Present",
