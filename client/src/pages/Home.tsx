@@ -1,101 +1,391 @@
-/**
- * Neo-Brutalism meets Tech Minimalism Design Philosophy
- * - Deep slate backgrounds with electric cyan accents
- * - Bold typography with intentional weight contrasts
- * - Diagonal section breaks and angled content blocks
- * - Technical grid overlays with subtle animations
- */
-
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Linkedin, Award, Code2, Rocket, Users, Zap } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Mail, Linkedin, Award, Briefcase, Lightbulb } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 export default function Home() {
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!heroRef.current) return;
+
+    const container = heroRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;';
+    container.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const streams: any[] = [];
+    let width = 0;
+    let height = 0;
+
+    const CONFIG = {
+      MAX_STREAMS: 8,
+      SPAWN_RATE: 0.012,
+      MIN_STREAM_LENGTH_PERCENT: 0.4,
+      CURVE_PROBABILITY: 1,
+      HORIZONTAL_BIAS: 0.75,
+      CURVE_INTENSITY_MIN: 0.15,
+      CURVE_INTENSITY_MAX: 0.5,
+      PARTICLES_PER_STREAM_MIN: 3,
+      PARTICLES_PER_STREAM_MAX: 6,
+      PARTICLE_SIZE_MIN: 1.5,
+      PARTICLE_SIZE_MAX: 4,
+      PARTICLE_GLOW_MIN: 12,
+      PARTICLE_GLOW_MAX: 25,
+      PARTICLE_SPEED_MIN: 0.0002,
+      PARTICLE_SPEED_MAX: 0.0006,
+      PARTICLE_SPACING: 0.18,
+      LINE_WIDTH_MIN: 0.8,
+      LINE_WIDTH_MAX: 2,
+      LINE_OPACITY_MIN: 0.15,
+      LINE_OPACITY_MAX: 0.4,
+      LINE_GLOW_MIN: 4,
+      LINE_GLOW_MAX: 12,
+      FADE_IN_TIME: 1000,
+      LIFETIME_MIN: 5000,
+      LIFETIME_MAX: 10000,
+      FADE_OUT_TIME: 1500,
+      COLORS: {
+        PURPLE: '168, 85, 247',
+        VIOLET: '192, 38, 211'
+      }
+    };
+
+    function resizeCanvas() {
+      width = container.offsetWidth;
+      height = container.offsetHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function random(min: number, max: number) {
+      return min + Math.random() * (max - min);
+    }
+
+    function randomInt(min: number, max: number) {
+      return Math.floor(random(min, max + 1));
+    }
+
+    function createStream() {
+      const isCurved = Math.random() < CONFIG.CURVE_PROBABILITY;
+      const color = Math.random() > 0.5 ? CONFIG.COLORS.PURPLE : CONFIG.COLORS.VIOLET;
+      
+      let startX, startY, endX, endY;
+      const minLength = width * CONFIG.MIN_STREAM_LENGTH_PERCENT;
+      
+      let attempts = 0;
+      let distance = 0;
+      
+      do {
+        if (Math.random() < CONFIG.HORIZONTAL_BIAS) {
+          if (Math.random() > 0.5) {
+            startX = random(-50, width * 0.1);
+            endX = random(width * 0.9, width + 50);
+          } else {
+            startX = random(width * 0.9, width + 50);
+            endX = random(-50, width * 0.1);
+          }
+          startY = random(height * 0.1, height * 0.9);
+          endY = random(height * 0.1, height * 0.9);
+        } else {
+          startX = random(-50, width + 50);
+          startY = random(-50, height + 50);
+          endX = random(-50, width + 50);
+          endY = random(-50, height + 50);
+        }
+        
+        const dx = endX - startX;
+        const dy = endY - startY;
+        distance = Math.sqrt(dx * dx + dy * dy);
+        
+        attempts++;
+        if (attempts > 20) break;
+        
+      } while (distance < minLength);
+
+      const particleCount = randomInt(
+        CONFIG.PARTICLES_PER_STREAM_MIN, 
+        CONFIG.PARTICLES_PER_STREAM_MAX
+      );
+
+      const particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          progress: i * CONFIG.PARTICLE_SPACING,
+          size: random(CONFIG.PARTICLE_SIZE_MIN, CONFIG.PARTICLE_SIZE_MAX),
+          glow: random(CONFIG.PARTICLE_GLOW_MIN, CONFIG.PARTICLE_GLOW_MAX)
+        });
+      }
+
+      const stream: any = {
+        startX,
+        startY,
+        endX,
+        endY,
+        isCurved,
+        color,
+        lineWidth: random(CONFIG.LINE_WIDTH_MIN, CONFIG.LINE_WIDTH_MAX),
+        lineOpacity: random(CONFIG.LINE_OPACITY_MIN, CONFIG.LINE_OPACITY_MAX),
+        lineGlow: random(CONFIG.LINE_GLOW_MIN, CONFIG.LINE_GLOW_MAX),
+        particles,
+        particleSpeed: random(CONFIG.PARTICLE_SPEED_MIN, CONFIG.PARTICLE_SPEED_MAX),
+        createdAt: Date.now(),
+        fadeInTime: CONFIG.FADE_IN_TIME,
+        lifetime: random(CONFIG.LIFETIME_MIN, CONFIG.LIFETIME_MAX),
+        fadeOutTime: CONFIG.FADE_OUT_TIME,
+        state: 'fadingIn',
+        alpha: 0
+      };
+
+      if (isCurved) {
+        const curvature = random(CONFIG.CURVE_INTENSITY_MIN, CONFIG.CURVE_INTENSITY_MAX);
+        const midX = (startX + endX) / 2;
+        const midY = (startY + endY) / 2;
+        
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const perpX = -dy * curvature;
+        const perpY = dx * curvature;
+        
+        stream.cp1X = midX + perpX * (Math.random() - 0.5) * 2;
+        stream.cp1Y = midY + perpY * (Math.random() - 0.5) * 2;
+        stream.cp2X = midX - perpX * (Math.random() - 0.5) * 2;
+        stream.cp2Y = midY - perpY * (Math.random() - 0.5) * 2;
+      }
+
+      return stream;
+    }
+
+    function getPointOnPath(stream: any, t: number) {
+      if (stream.isCurved) {
+        const t1 = 1 - t;
+        return {
+          x: Math.pow(t1, 3) * stream.startX + 
+             3 * Math.pow(t1, 2) * t * stream.cp1X +
+             3 * t1 * Math.pow(t, 2) * stream.cp2X +
+             Math.pow(t, 3) * stream.endX,
+          y: Math.pow(t1, 3) * stream.startY + 
+             3 * Math.pow(t1, 2) * t * stream.cp1Y +
+             3 * t1 * Math.pow(t, 2) * stream.cp2Y +
+             Math.pow(t, 3) * stream.endY
+        };
+      } else {
+        return {
+          x: stream.startX + (stream.endX - stream.startX) * t,
+          y: stream.startY + (stream.endY - stream.startY) * t
+        };
+      }
+    }
+
+    function updateStream(stream: any) {
+      const now = Date.now();
+      const age = now - stream.createdAt;
+
+      if (stream.state === 'fadingIn') {
+        stream.alpha = Math.min(1, age / stream.fadeInTime);
+        if (age >= stream.fadeInTime) {
+          stream.state = 'active';
+        }
+      } else if (stream.state === 'active') {
+        stream.alpha = 1;
+        if (age >= stream.fadeInTime + stream.lifetime) {
+          stream.state = 'fadingOut';
+          stream.fadeOutStartTime = now;
+        }
+      } else if (stream.state === 'fadingOut') {
+        const fadeProgress = (now - stream.fadeOutStartTime) / stream.fadeOutTime;
+        stream.alpha = Math.max(0, 1 - fadeProgress);
+        if (fadeProgress >= 1) {
+          stream.state = 'dead';
+        }
+      }
+
+      for (let i = 0; i < stream.particles.length; i++) {
+        stream.particles[i].progress += stream.particleSpeed;
+        
+        if (stream.particles[i].progress > 1 + CONFIG.PARTICLE_SPACING) {
+          stream.particles[i].progress = -CONFIG.PARTICLE_SPACING;
+        }
+      }
+    }
+
+    function drawStream(stream: any) {
+      if (!ctx || stream.alpha <= 0) return;
+
+      ctx.globalAlpha = stream.alpha;
+
+      ctx.beginPath();
+      ctx.moveTo(stream.startX, stream.startY);
+      
+      if (stream.isCurved) {
+        ctx.bezierCurveTo(
+          stream.cp1X, stream.cp1Y,
+          stream.cp2X, stream.cp2Y,
+          stream.endX, stream.endY
+        );
+      } else {
+        ctx.lineTo(stream.endX, stream.endY);
+      }
+
+      ctx.strokeStyle = `rgba(${stream.color}, ${stream.lineOpacity})`;
+      ctx.lineWidth = stream.lineWidth;
+      ctx.shadowBlur = stream.lineGlow;
+      ctx.shadowColor = `rgba(${stream.color}, ${stream.lineOpacity})`;
+      ctx.stroke();
+
+      for (let i = 0; i < stream.particles.length; i++) {
+        const particle = stream.particles[i];
+        if (particle.progress >= 0 && particle.progress <= 1) {
+          const pos = getPointOnPath(stream, particle.progress);
+          
+          ctx.shadowBlur = particle.glow;
+          ctx.shadowColor = `rgba(${stream.color}, 1)`;
+          
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, particle.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${stream.color}, 1)`;
+          ctx.fill();
+        }
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+    }
+
+    function animate() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+
+      if (!ctx) return;
+      for (let i = streams.length - 1; i >= 0; i--) {
+        updateStream(streams[i]);
+        
+        if (streams[i].state === 'dead') {
+          streams.splice(i, 1);
+        } else {
+          drawStream(streams[i]);
+        }
+      }
+
+      if (streams.length < CONFIG.MAX_STREAMS && Math.random() < CONFIG.SPAWN_RATE) {
+        streams.push(createStream());
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    for (let i = 0; i < Math.min(3, CONFIG.MAX_STREAMS); i++) {
+      streams.push(createStream());
+    }
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      canvas.remove();
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-950">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="font-mono text-primary text-lg font-bold">KVF</div>
-          <div className="flex gap-6 items-center">
-            <a href="#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</a>
-            <a href="#experience" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Experience</a>
-            <a href="#patents" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Patents</a>
-            <a href="#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+              KVF
+            </div>
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#about" className="text-slate-300 hover:text-purple-400 transition-colors">About</a>
+              <a href="#experience" className="text-slate-300 hover:text-purple-400 transition-colors">Experience</a>
+              <a href="#patents" className="text-slate-300 hover:text-purple-400 transition-colors">Patents</a>
+              <a href="#contact" className="text-slate-300 hover:text-purple-400 transition-colors">Contact</a>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section - Diagonal Split Layout */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: 'url(/images/hero-tech-visual.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
+      {/* Hero Section */}
+      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden pt-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/20 via-slate-950 to-fuchsia-950/20"></div>
         
-        {/* Diagonal Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-transparent" />
-        
-        <div className="container relative z-10">
+        <div className="container relative z-10 mx-auto px-6 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <div className="space-y-4">
-                <div className="font-mono text-primary text-sm tracking-wider">TECHNOLOGY LEADER</div>
-                <h1 className="text-6xl lg:text-7xl font-black leading-tight">
-                  Kevin D.<br />
-                  Van Flandern
+              <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-950/30 backdrop-blur-sm px-4 py-1.5 text-sm font-medium rounded-full">
+                TECHNOLOGY LEADER
+              </Badge>
+              
+              <div>
+                <h1 className="text-6xl md:text-7xl font-bold mb-4">
+                  <span className="bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+                    Kevin D.
+                  </span>
+                  <br />
+                  <span className="bg-gradient-to-r from-purple-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent">
+                    Van Flandern
+                  </span>
                 </h1>
-                <div className="h-1 w-24 bg-primary" />
+                <div className="h-1 w-24 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-full mb-6"></div>
+                <p className="text-xl text-slate-300 leading-relaxed max-w-xl">
+                  25+ years architecting complex systems at massive scale. 6 U.S. patents. Expert in Agile at Scale, AI/LLM, and blockchain technologies.
+                </p>
               </div>
-              
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-                25+ years architecting complex systems at massive scale. 6 U.S. patents. 
-                Expert in Agile at Scale, AI/LLM, and blockchain technologies.
-              </p>
-              
+
               <div className="flex flex-wrap gap-3">
-                <Badge variant="outline" className="px-4 py-2 text-sm border-primary text-primary">
+                <Badge className="bg-purple-500/10 text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition-all px-4 py-2 text-sm rounded-xl">
                   <Award className="w-4 h-4 mr-2" />
                   6 Patents
                 </Badge>
-                <Badge variant="outline" className="px-4 py-2 text-sm border-primary text-primary">
-                  <Code2 className="w-4 h-4 mr-2" />
+                <Badge className="bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/30 hover:bg-fuchsia-500/20 transition-all px-4 py-2 text-sm rounded-xl">
+                  <Briefcase className="w-4 h-4 mr-2" />
                   Microsoft Alumni
                 </Badge>
-                <Badge variant="outline" className="px-4 py-2 text-sm border-primary text-primary">
-                  <Rocket className="w-4 h-4 mr-2" />
+                <Badge className="bg-purple-500/10 text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition-all px-4 py-2 text-sm rounded-xl">
+                  <Lightbulb className="w-4 h-4 mr-2" />
                   AI & Blockchain
                 </Badge>
               </div>
-              
-              <div className="flex gap-4 pt-4">
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Mail className="w-4 h-4 mr-2" />
+
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all rounded-xl px-8"
+                >
+                  <Mail className="w-5 h-5 mr-2" />
                   Get In Touch
                 </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <a href="https://www.linkedin.com/in/kevin-van-flandern-1949aa4" target="_blank" rel="noopener noreferrer">
-                    <Linkedin className="w-4 h-4 mr-2" />
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 hover:border-purple-500/50 rounded-xl px-8"
+                  asChild
+                >
+                  <a href="https://www.linkedin.com/in/kevin-van-flandern-1949aa4/" target="_blank" rel="noopener noreferrer">
+                    <Linkedin className="w-5 h-5 mr-2" />
                     LinkedIn
                   </a>
                 </Button>
               </div>
             </div>
-            
-            <div className="hidden lg:block">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                <img 
-                  src="/images/hero-tech-visual.png" 
-                  alt="Technical visualization"
-                  className="relative z-10 w-full h-auto"
-                />
+
+            <div className="relative">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-fuchsia-600 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative">
+                  <img 
+                    src="/images/kevin-headshot.png" 
+                    alt="Kevin Van Flandern" 
+                    className="relative rounded-3xl shadow-2xl shadow-purple-900/50 border border-purple-500/20 w-full max-w-md mx-auto"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -103,299 +393,240 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-24 relative">
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: 'url(/images/experience-pattern.png)',
-          backgroundSize: 'cover',
-        }} />
-        
-        <div className="container relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-5xl font-black mb-8">
-              <span className="text-primary">About</span>
-            </h2>
-            
-            <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
-              <p>
-                A seasoned and results-driven technology leader with over 25 years of experience architecting, 
-                delivering, and managing complex software and hardware products at massive scale. A holder of 
-                <span className="text-foreground font-semibold"> 6 U.S. patents</span> for innovations in software 
-                performance and computer hardware.
+      <section id="about" className="py-24 bg-slate-900/50">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-12 bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+            About
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <p className="text-lg text-slate-300 leading-relaxed">
+                A seasoned and results-driven technology leader with over 25 years of experience architecting, delivering, and managing complex software and hardware products at massive scale. A holder of <span className="text-purple-400 font-semibold">6 U.S. patents</span> for innovations in software performance and computer hardware.
               </p>
-              
-              <p>
-                A proven expert in implementing Agile at Scale frameworks to bring predictability and cross-team 
-                communication to 40,000-person organizations. A forward-thinking technologist with hands-on experience 
-                in cutting-edge AI/LLM and blockchain technologies.
+              <p className="text-lg text-slate-300 leading-relaxed">
+                A proven expert in implementing <span className="text-purple-400 font-semibold">Agile at Scale</span> frameworks to bring predictability and cross-team communication to 40,000-person organizations. A forward-thinking technologist with hands-on experience in cutting-edge <span className="text-purple-400 font-semibold">AI/LLM</span> and <span className="text-purple-400 font-semibold">blockchain</span> technologies.
               </p>
-              
-              <div className="grid md:grid-cols-3 gap-6 pt-8">
-                <Card className="p-6 bg-card border-border hover:border-primary transition-colors">
-                  <Users className="w-8 h-8 text-primary mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Leadership</h3>
-                  <p className="text-sm text-muted-foreground">
+            </div>
+
+            <div className="grid gap-6">
+              <Card className="bg-slate-800/50 border-purple-500/20 hover:border-purple-500/40 transition-all backdrop-blur-sm shadow-lg hover:shadow-purple-500/10 rounded-2xl">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-3 text-purple-300">Leadership</h3>
+                  <p className="text-slate-300">
                     Led teams and organizations from 10 to 40,000 people across Microsoft, startups, and consulting.
                   </p>
-                </Card>
-                
-                <Card className="p-6 bg-card border-border hover:border-primary transition-colors">
-                  <Zap className="w-8 h-8 text-primary mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Innovation</h3>
-                  <p className="text-sm text-muted-foreground">
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border-fuchsia-500/20 hover:border-fuchsia-500/40 transition-all backdrop-blur-sm shadow-lg hover:shadow-fuchsia-500/10 rounded-2xl">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-3 text-fuchsia-300">Innovation</h3>
+                  <p className="text-slate-300">
                     Pioneered performance testing, self-healing data centers, and contributed to Azure's precursor.
                   </p>
-                </Card>
-                
-                <Card className="p-6 bg-card border-border hover:border-primary transition-colors">
-                  <Rocket className="w-8 h-8 text-primary mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Modern Tech</h3>
-                  <p className="text-sm text-muted-foreground">
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border-purple-500/20 hover:border-purple-500/40 transition-all backdrop-blur-sm shadow-lg hover:shadow-purple-500/10 rounded-2xl">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-3 text-purple-300">Modern Tech</h3>
+                  <p className="text-slate-300">
                     Hands-on with AI/LLMs, blockchain, tokenomics, and cutting-edge development practices.
                   </p>
-                </Card>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Experience Section - Diagonal Layout */}
-      <section id="experience" className="py-24 relative overflow-hidden">
-        {/* Diagonal Background Split */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-secondary" style={{
-            clipPath: 'polygon(0 0, 100% 8%, 100% 100%, 0 100%)',
-          }} />
-        </div>
-        
-        <div className="container relative z-10">
-          <h2 className="text-5xl font-black mb-16">
-            <span className="text-primary">Experience</span>
+      {/* Experience Section */}
+      <section id="experience" className="py-24">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-16 bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+            Experience
           </h2>
-          
-          <div className="space-y-12 max-w-5xl">
-            {/* Current Roles */}
-            <ExperienceCard
-              title="Chief Executive Officer"
-              company="VF Associates, LLC"
-              period="Present"
-              description="Boutique consulting firm providing executive-level program management and technology leadership to VC/PE-backed companies. Led IT transformation for Matrix Medical, restructuring 1,000-person organization to under 100 in 18 months."
-              tags={["Executive Leadership", "Business Transformation", "DevOps"]}
-            />
-            
-            <ExperienceCard
-              title="Technical Advisor"
-              company="Convergence Technology Solutions (CTS)"
-              period="Present"
-              description="Guide development of ARIA, a custom AI/LLM for VC/PE due diligence. Leverage hands-on experience with ChatGPT, Grok, Claude, and Manus to accelerate workflows."
-              tags={["AI/LLM", "Technical Advisory", "Fintech"]}
-            />
-            
-            <ExperienceCard
-              title="Community Developer"
-              company="Gorbogana Blockchain"
-              period="Present"
-              description="Architected white paper and SDK for sustainable gaming economy. Launched utility token that became second-best performing on chain for two months. Set up RPC servers and contributed to bridging solutions."
-              tags={["Blockchain", "Tokenomics", "Smart Contracts"]}
-            />
-            
-            {/* Microsoft Azure */}
-            <ExperienceCard
-              title="Principal Program Manager"
-              company="Microsoft (Azure)"
-              period="2018 - 2020"
-              description="Standardized program management across 40,000-person Azure organization. Architected customized Agility at Scale framework with unified work tracking, reporting, and roadmap planning."
-              tags={["Agile at Scale", "Azure DevOps", "Program Management"]}
-              highlight
-            />
-            
-            {/* Roundit */}
-            <ExperienceCard
-              title="Co-Founder & CTO"
-              company="Roundit"
-              period="2016 - 2018"
-              description="Co-founded fintech startup for charitable micro-donations. Led end-to-end product development including mobile apps (iOS/Android), desktop app, and backend services. Integrated Plaid and Stripe APIs."
-              tags={["Fintech", "CTO", "Full-Stack"]}
-            />
-            
-            {/* Microsoft IT */}
-            <ExperienceCard
-              title="Principal Lead Program Manager"
-              company="Microsoft (IT)"
-              period="2012 - 2016"
-              description="Led team of 10 PMs driving Agile transformation for 150-person engineering org. Managed cross-company rewards system. Led emergency deployment to Shanghai to rescue failing financial system."
-              tags={["Agile Transformation", "Crisis Management", "Leadership"]}
-            />
-            
-            {/* Microsoft Office */}
-            <ExperienceCard
-              title="Software Development Engineer"
-              company="Microsoft (Office Shared Features)"
-              period="1996 - 2000"
-              description="Co-invented revolutionary performance testing harness for entire Office suite (U.S. Patent 6,754,612). Engineered novel solution to inject performance markers into post-compiled code. Built self-healing test environment with 100+ machines."
-              tags={["Performance Engineering", "Patents", "Innovation"]}
-              highlight
-            />
+
+          <div className="space-y-8">
+            {[
+              {
+                title: "Chief Executive Officer",
+                company: "VF Associates, LLC",
+                period: "Present",
+                description: "Boutique consulting firm providing executive-level program management and technology leadership to VC/PE-backed companies. Led IT transformation for Matrix Medical, restructuring 1,000-person organization to under 100 in 18 months.",
+                tags: ["Executive Leadership", "Business Transformation", "DevOps"]
+              },
+              {
+                title: "Technical Advisor",
+                company: "Convergence Technology Solutions (CTS)",
+                period: "Present",
+                description: "Guide development of ARIA, a custom AI/LLM for VC/PE due diligence. Leverage hands-on experience with ChatGPT, Grok, Claude, and Manus to accelerate workflows.",
+                tags: ["AI/LLM", "Technical Advisory", "Fintech"]
+              },
+              {
+                title: "Community Developer",
+                company: "Gorbogana Blockchain",
+                period: "Present",
+                description: "Architected white paper and SDK for sustainable gaming economy. Launched utility token that became second-best performing on chain for two months. Set up RPC servers and contributed to bridging solutions.",
+                tags: ["Blockchain", "Tokenomics", "Smart Contracts"]
+              },
+              {
+                title: "Principal Program Manager",
+                company: "Microsoft (Azure)",
+                period: "2018 - 2020",
+                description: "Standardized program management across 40,000-person Azure organization. Architected customized Agility at Scale framework with unified work tracking, reporting, and roadmap planning.",
+                tags: ["Agile at Scale", "Azure DevOps", "Program Management"]
+              },
+              {
+                title: "Co-Founder & CTO",
+                company: "Roundit",
+                period: "2016 - 2018",
+                description: "Co-founded fintech startup for charitable micro-donations. Led end-to-end product development including mobile apps (iOS/Android), desktop app, and backend services. Integrated Plaid and Stripe APIs.",
+                tags: ["Fintech", "CTO", "Full-Stack"]
+              },
+              {
+                title: "Principal Lead Program Manager",
+                company: "Microsoft (IT)",
+                period: "2012 - 2016",
+                description: "Led team of 10 PMs driving Agile transformation for 150-person engineering org. Managed cross-company rewards system. Led emergency deployment to Shanghai to rescue failing financial system.",
+                tags: ["Agile Transformation", "Crisis Management", "Leadership"]
+              },
+              {
+                title: "Software Development Engineer",
+                company: "Microsoft (Office Shared Features)",
+                period: "1996 - 2000",
+                description: "Co-invented revolutionary performance testing harness for entire Office suite (U.S. Patent 6,754,612). Engineered novel solution to inject performance markers into post-compiled code. Built self-healing test environment with 100+ machines.",
+                tags: ["Performance Engineering", "Patents", "Innovation"]
+              }
+            ].map((job, index) => (
+              <Card key={index} className="bg-slate-800/30 border-purple-500/20 hover:border-purple-500/40 transition-all backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/10 rounded-2xl">
+                <CardContent className="p-8">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="text-2xl font-bold text-white mb-1">{job.title}</h3>
+                      <p className="text-purple-300 font-medium">{job.company}</p>
+                    </div>
+                    <Badge variant="outline" className="border-purple-500/30 text-purple-300 self-start rounded-full px-4 py-1">
+                      {job.period}
+                    </Badge>
+                  </div>
+                  <p className="text-slate-300 mb-6 leading-relaxed">{job.description}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {job.tags.map((tag, tagIndex) => (
+                      <Badge key={tagIndex} className="bg-purple-500/10 text-purple-300 border-0 rounded-lg px-3 py-1 text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Patents Section */}
-      <section id="patents" className="py-24 relative">
-        <div 
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: 'url(/images/patent-background.png)',
-            backgroundSize: 'cover',
-          }}
-        />
-        
-        <div className="container relative z-10">
-          <h2 className="text-5xl font-black mb-16">
-            <span className="text-primary">Patents &</span> Innovation
+      <section id="patents" className="py-24 bg-slate-900/50">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+            Patents & Innovation
           </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
-            <PatentCard
-              number="6,754,612"
-              title="Performance Markers to Measure Benchmark Timing"
-              date="June 22, 2004"
-            />
-            <PatentCard
-              number="D446,522"
-              title="Outer Surface of a Button for a Computer Input Device"
-              date="August 14, 2001"
-            />
-            <PatentCard
-              number="D446,211"
-              title="Computer Input Device"
-              date="August 7, 2001"
-            />
-            <PatentCard
-              number="8,204,004"
-              title="Method and System for Resolving Issues with Computer-Based Product"
-              date="2004"
-            />
-            <PatentCard
-              number="D446,521"
-              title="Moveable Control Device"
-              date="February 29, 2000"
-            />
-            <PatentCard
-              title="Control Device with Enhanced Control Aspects"
-              date="February 29, 2000"
-            />
+          <p className="text-slate-400 mb-12 text-lg">Recognized innovations in software performance and computer hardware design</p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                number: "US 6,754,612",
+                title: "Performance Markers to Measure Benchmark Timing",
+                date: "June 22, 2004"
+              },
+              {
+                number: "US D446,522",
+                title: "Outer Surface of a Button for a Computer Input Device",
+                date: "August 14, 2001"
+              },
+              {
+                number: "US D446,211",
+                title: "Computer Input Device",
+                date: "August 7, 2001"
+              },
+              {
+                number: "US 8,204,004",
+                title: "Method and System for Resolving Issues with Computer-Based Product",
+                date: "2004"
+              },
+              {
+                number: "US D446,521",
+                title: "Moveable Control Device",
+                date: "February 29, 2000"
+              },
+              {
+                number: "Design Patent",
+                title: "Control Device with Enhanced Control Aspects",
+                date: "February 29, 2000"
+              }
+            ].map((patent, index) => (
+              <Card key={index} className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-purple-500/20 hover:border-purple-500/50 transition-all backdrop-blur-sm hover:shadow-xl hover:shadow-purple-500/20 rounded-2xl group">
+                <CardContent className="p-6">
+                  <div className="mb-4">
+                    <Badge className="bg-purple-500/20 text-purple-300 border-0 rounded-lg px-3 py-1 text-xs font-mono">
+                      {patent.number}
+                    </Badge>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-purple-300 transition-colors leading-snug">
+                    {patent.title}
+                  </h3>
+                  <p className="text-slate-400 text-sm">{patent.date}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 relative">
-        <div className="container">
-          <div className="max-w-2xl mx-auto text-center space-y-8">
-            <h2 className="text-5xl font-black">
-              Let's <span className="text-primary">Connect</span>
-            </h2>
-            
-            <p className="text-xl text-muted-foreground">
-              Currently seeking Technical Program Manager, Senior Program Manager, or executive leadership roles.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                <Mail className="w-4 h-4 mr-2" />
+      <section id="contact" className="py-24">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+            Let's Connect
+          </h2>
+          <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+            Currently seeking Technical Program Manager, Senior Program Manager, or executive leadership roles.
+          </p>
+
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all rounded-xl px-8"
+              asChild
+            >
+              <a href="mailto:KevinVF@hotmail.com">
+                <Mail className="w-5 h-5 mr-2" />
                 KevinVF@hotmail.com
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <a href="https://www.linkedin.com/in/kevin-van-flandern-1949aa4" target="_blank" rel="noopener noreferrer">
-                  <Linkedin className="w-4 h-4 mr-2" />
-                  Connect on LinkedIn
-                </a>
-              </Button>
-            </div>
+              </a>
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 hover:border-purple-500/50 rounded-xl px-8"
+              asChild
+            >
+              <a href="https://www.linkedin.com/in/kevin-van-flandern-1949aa4/" target="_blank" rel="noopener noreferrer">
+                <Linkedin className="w-5 h-5 mr-2" />
+                Connect on LinkedIn
+              </a>
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="font-mono text-sm text-muted-foreground">
-              © 2026 Kevin D. Van Flandern
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Renton, WA
-            </div>
-          </div>
+      <footer className="py-8 border-t border-white/5">
+        <div className="container mx-auto px-6 text-center text-slate-400 text-sm">
+          <p>© 2026 Kevin D. Van Flandern. All rights reserved.</p>
         </div>
       </footer>
     </div>
-  );
-}
-
-// Experience Card Component
-function ExperienceCard({ 
-  title, 
-  company, 
-  period, 
-  description, 
-  tags,
-  highlight = false 
-}: { 
-  title: string; 
-  company: string; 
-  period: string; 
-  description: string; 
-  tags: string[];
-  highlight?: boolean;
-}) {
-  return (
-    <Card className={`p-8 bg-card border-border hover:border-primary transition-all duration-300 ${highlight ? 'border-primary/50' : ''}`}>
-      <div className="space-y-4">
-        <div className="flex justify-between items-start gap-4">
-          <div>
-            <h3 className="text-2xl font-bold">{title}</h3>
-            <div className="text-lg text-primary font-semibold">{company}</div>
-          </div>
-          <div className="font-mono text-sm text-muted-foreground whitespace-nowrap">{period}</div>
-        </div>
-        
-        <p className="text-muted-foreground leading-relaxed">{description}</p>
-        
-        <div className="flex flex-wrap gap-2 pt-2">
-          {tags.map((tag, i) => (
-            <Badge key={i} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-// Patent Card Component
-function PatentCard({ 
-  number, 
-  title, 
-  date 
-}: { 
-  number?: string; 
-  title: string; 
-  date: string; 
-}) {
-  return (
-    <Card className="p-6 bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-lg hover:shadow-primary/20">
-      <div className="space-y-3">
-        {number && (
-          <div className="font-mono text-2xl font-bold text-primary">
-            US {number}
-          </div>
-        )}
-        <h3 className="text-sm font-semibold leading-tight min-h-[3rem]">{title}</h3>
-        <div className="font-mono text-xs text-muted-foreground">{date}</div>
-      </div>
-    </Card>
   );
 }
