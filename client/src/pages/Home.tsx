@@ -472,11 +472,11 @@ export default function Home() {
                 tags: ["Blockchain", "Tokenomics", "Smart Contracts"]
               },
               {
-                title: "Advisory Board Member",
+                title: "Board of Directors",
                 company: "Meta Research",
                 period: "Present",
-                description: "Provide strategic guidance on technology initiatives, program management best practices, and emerging technology trends including AI/LLM integration and blockchain applications.",
-                tags: ["Strategic Advisory", "AI/LLM", "Technology Leadership"]
+                description: "Serve on the Board of Directors, providing executive-level strategic guidance on technology initiatives, corporate governance, and business strategy. Guide decisions on AI/LLM integration, blockchain applications, and program management best practices.",
+                tags: ["Board of Directors", "Corporate Governance", "Strategic Leadership"]
               },
               {
                 title: "Advisory Board Member",
