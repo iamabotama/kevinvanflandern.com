@@ -326,7 +326,7 @@ export default function Home() {
               <div>
                 <h1 className="text-6xl md:text-7xl font-bold mb-4">
                   <span className="bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
-                    Kevin D.
+                    Kevin
                   </span>
                   <br />
                   <span className="bg-gradient-to-r from-purple-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent">
@@ -335,14 +335,14 @@ export default function Home() {
                 </h1>
                 <div className="h-1 w-24 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-full mb-6"></div>
                 <p className="text-xl text-slate-300 leading-relaxed max-w-xl">
-                  25+ years architecting complex systems at massive scale. 6 U.S. patents. Expert in Agile at Scale, AI/LLM, and blockchain technologies.
+                  25+ years architecting complex systems at massive scale. 4 U.S. patents. Expert in Agile at Scale, AI/LLM, and modern software and services architecture.
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <Badge className="bg-purple-500/10 text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition-all px-4 py-2 text-sm rounded-xl">
                   <Award className="w-4 h-4 mr-2" />
-                  6 Patents
+                  4 Patents
                 </Badge>
                 <Badge className="bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/30 hover:bg-fuchsia-500/20 transition-all px-4 py-2 text-sm rounded-xl">
                   <Briefcase className="w-4 h-4 mr-2" />
@@ -350,7 +350,7 @@ export default function Home() {
                 </Badge>
                 <Badge className="bg-purple-500/10 text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition-all px-4 py-2 text-sm rounded-xl">
                   <Lightbulb className="w-4 h-4 mr-2" />
-                  AI & Blockchain
+                  AI & Modern Architecture
                 </Badge>
               </div>
 
@@ -402,10 +402,10 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12">
             <div className="space-y-6">
               <p className="text-lg text-slate-300 leading-relaxed">
-                A seasoned and results-driven technology leader with over 25 years of experience architecting, delivering, and managing complex software and hardware products at massive scale. A holder of <span className="text-purple-400 font-semibold">6 U.S. patents</span> for innovations in software performance and computer hardware.
+                A seasoned and results-driven technology leader with over 25 years of experience architecting, delivering, and managing complex software and hardware products at massive scale. A holder of <span className="text-purple-400 font-semibold">4 U.S. patents</span> for innovations in software performance and computer hardware.
               </p>
               <p className="text-lg text-slate-300 leading-relaxed">
-                A proven expert in implementing <span className="text-purple-400 font-semibold">Agile at Scale</span> frameworks to bring predictability and cross-team communication to 40,000-person organizations. A forward-thinking technologist with hands-on experience in cutting-edge <span className="text-purple-400 font-semibold">AI/LLM</span> and <span className="text-purple-400 font-semibold">blockchain</span> technologies.
+                A proven expert in implementing <span className="text-purple-400 font-semibold">Agile at Scale</span> frameworks to bring predictability and cross-team communication to 40,000-person organizations. A forward-thinking technologist with hands-on experience in cutting-edge <span className="text-purple-400 font-semibold">AI/LLM</span> and <span className="text-purple-400 font-semibold">modern software and services architecture</span>.
               </p>
             </div>
 
@@ -432,7 +432,7 @@ export default function Home() {
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-3 text-purple-300">Modern Tech</h3>
                   <p className="text-slate-300">
-                    Hands-on with AI/LLMs, blockchain, tokenomics, and cutting-edge development practices.
+                    Hands-on with AI/LLMs, modern software and services architecture, and cutting-edge development practices.
                   </p>
                 </CardContent>
               </Card>
@@ -469,13 +469,13 @@ export default function Home() {
                 company: "Gorbogana Blockchain",
                 period: "Present",
                 description: "Architected white paper and SDK for sustainable gaming economy. Launched utility token that became second-best performing on chain for two months. Set up RPC servers and contributed to bridging solutions.",
-                tags: ["Blockchain", "Tokenomics", "Smart Contracts"]
+                tags: ["Software Architecture", "System Design", "Infrastructure"]
               },
               {
                 title: "Board of Directors",
                 company: "Meta Research",
                 period: "Present",
-                description: "Serve on the Board of Directors, providing executive-level strategic guidance on technology initiatives, corporate governance, and business strategy. Guide decisions on AI/LLM integration, blockchain applications, and program management best practices.",
+                description: "Serve on the Board of Directors, providing executive-level strategic guidance on technology initiatives, corporate governance, and business strategy. Guide decisions on AI/LLM integration, modern software architecture, and program management best practices.",
                 tags: ["Board of Directors", "Corporate Governance", "Strategic Leadership"]
               },
               {
@@ -566,18 +566,8 @@ export default function Home() {
                 date: "August 7, 2001"
               },
               {
-                number: "US 8,204,004",
-                title: "Method and System for Resolving Issues with Computer-Based Product",
-                date: "2004"
-              },
-              {
                 number: "US D446,521",
                 title: "Moveable Control Device",
-                date: "February 29, 2000"
-              },
-              {
-                number: "Design Patent",
-                title: "Control Device with Enhanced Control Aspects",
                 date: "February 29, 2000"
               }
             ].map((patent, index) => (
@@ -638,7 +628,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-8 border-t border-white/5">
         <div className="container mx-auto px-6 text-center text-slate-400 text-sm">
-          <p>© 2026 Kevin D. Van Flandern. All rights reserved.</p>
+          <p>© 2026 Kevin Van Flandern. All rights reserved.</p>
         </div>
       </footer>
     </div>
